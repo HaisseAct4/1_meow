@@ -1,0 +1,48 @@
+# HTB Starting Point: Meow
+
+**Topic:** Insecure remote access (Telnet)
+**Tools:** Nmap, Telnet
+**Difficulty:** Very Easy
+
+## Summary
+The target exposed a Telnet service that allowed remote login as the root
+account with no password, giving full control of the system to anyone who
+could reach the port.
+
+## Reconnaissance
+I scanned the target to identify open ports and service versions:
+
+    nmap -sV [TARGET_IP]
+
+The scan showed Telnet running on TCP port 23. Telnet provides remote
+terminal access but sends everything, including credentials, unencrypted.
+
+## Exploitation
+1. Connected to the service:
+
+       telnet [TARGET_IP]
+
+2. Tested a common default credential: username `root` with a blank
+   password. The login succeeded.
+3. Used `ls` to list the files in the current directory and `cat` to read
+   the file containing the flag. (Flag omitted.)
+
+## Impact
+Anyone with network access to port 23 could log in as root without a
+password. Root is the Linux administrator account, so an attacker could
+read, change, or delete any data, install software, and use the machine
+to attack other systems.
+
+## Remediation
+- Disable Telnet and use SSH for encrypted remote access.
+- Require strong authentication and never allow accounts with blank
+  passwords.
+- Disable direct root login over remote services (for SSH,
+  `PermitRootLogin no`) and use key-based authentication.
+- Restrict access to management ports with a firewall.
+
+## What I learned
+- `nmap -sV` identifies services and attempts version detection.
+- Testing default and common credentials is a standard first check on
+  exposed services.
+- Telnet is unencrypted, so it should not be used where SSH is available.
